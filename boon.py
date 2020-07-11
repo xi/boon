@@ -80,11 +80,11 @@ def fullscreen():
 		sys.stdout.flush()
 
 
-def getch():
+def getch(timeout=0.5):
 	# NOTE: result might contain more than one key
 	fd = sys.stdin.fileno()
 	try:
-		r, _w, _e = select.select([fd], [], [], 0.5)
+		r, _w, _e = select.select([fd], [], [], timeout)
 	except select.error:
 		return
 	with termios_reset(fd):
