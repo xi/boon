@@ -138,26 +138,3 @@ class App:
 
 	def on_key(self, key):
 		pass
-
-
-class Example(App):
-	def __init__(self):
-		super().__init__()
-		self.keys = ['f', 'b', 'z']
-
-	def on_key(self, key):
-		if key == 'q':
-			sys.exit(0)
-		elif key == KEY_BACKSPACE:
-			self.keys.pop()
-		elif key in 'abcdefghijklmnopqrstuvwxyz':
-			self.keys.append(key)
-
-	def render(self):
-		for key in self.keys:
-			yield str(key) + 'test'
-
-
-if __name__ == '__main__':
-	example = Example()
-	example.run()
