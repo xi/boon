@@ -98,6 +98,10 @@ def getch():
 # 	return OSC + '2;' + title + BEL
 
 
+def cursor_move(x, y):
+	sys.stdout.write(get_cap('cup', y, x))
+
+
 class App:
 	def __init__(self):
 		self.old_lines = []
@@ -108,12 +112,12 @@ class App:
 		for i, line in enumerate(lines):
 			if len(self.old_lines) > i and line == self.old_lines[i]:
 				continue
-			sys.stdout.write(get_cap('cup', i, 0))
+			cursor_move(0, i)
 			sys.stdout.write(get_cap('el'))
 			sys.stdout.write(line)
 
 		# clear rest of screen
-		sys.stdout.write(get_cap('cup', len(lines), 0))
+		cursor_move(0, len(lines))
 		sys.stdout.write(get_cap('ed'))
 		sys.stdout.flush()
 
