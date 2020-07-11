@@ -100,31 +100,6 @@ def getch():
 # 	return OSC + '2;' + title + BEL
 
 
-def style(
-	s,
-	bold=False,
-	rev=False,
-	underline=False,
-	italic=False,
-	fg=None,
-	bg=None,
-):
-	styles = ''
-	if bold:
-		styles += get_cap('bold')
-	if rev:
-		styles += get_cap('rev')
-	if underline:
-		styles += get_cap('smul')
-	if italic:
-		styles += get_cap('sitm')
-	if fg is not None:
-		styles += get_cap('setaf', fg)
-	if bg is not None:
-		styles += get_cap('setab', bg)
-	return styles + s + get_cap('sgr0')
-
-
 class App:
 	def __init__(self):
 		self.old_lines = []
@@ -181,7 +156,7 @@ class Example(App):
 
 	def render(self):
 		for key in self.keys:
-			yield style(str(key), fg=13) + 'test'
+			yield str(key) + 'test'
 
 
 if __name__ == '__main__':
