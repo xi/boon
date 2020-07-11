@@ -80,6 +80,17 @@ def fullscreen():
 		sys.stdout.flush()
 
 
+@contextmanager
+def title(s):
+	sys.stdout.write('\033]2;%s\a' % s)
+	sys.stdout.flush()
+	try:
+		yield
+	finally:
+		sys.stdout.write('\033]2;%s\a' % '')
+		sys.stdout.flush()
+
+
 def getch():
 	# NOTE: bytes might contain more than one key
 	fd = sys.stdin.fileno()
@@ -95,16 +106,13 @@ def getch():
 		return os.read(fd, 8).decode('ascii')
 
 
-# https://github.com/tartley/colorama/blob/master/colorama/ansi.py
-# def set_title(title):
-# 	return OSC + '2;' + title + BEL
-
-
 def cursor_move(x, y):
 	sys.stdout.write(get_cap('cup', y, x))
 
 
 class App:
+	title = ''
+
 	def __init__(self):
 		self.old_lines = []
 		signal.signal(signal.SIGWINCH, self.on_resize)
@@ -131,12 +139,13 @@ class App:
 
 	def run(self):
 		with fullscreen():
-			self.on_resize()
-			while True:
-				key = getch()
-				if key:
-					self.on_key(key)
-					self.update()
+			with title(self.title):
+				self.on_resize()
+				while True:
+					key = getch()
+					if key:
+						self.on_key(key)
+						self.update()
 
 	def render(self):
 		return []
@@ -146,6 +155,8 @@ class App:
 
 
 class Example(App):
+	title = 'Example'
+
 	def __init__(self):
 		super().__init__()
 		self.keys = ['f', 'b', 'z']
