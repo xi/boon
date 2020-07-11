@@ -93,7 +93,7 @@ def getch(timeout=0.5):
 		return os.read(fd, 8).decode('ascii')
 
 
-def cursor_move(x, y):
+def cursor_move(y, x):
 	sys.stdout.write(get_cap('cup', y, x))
 
 
@@ -107,12 +107,12 @@ class App:
 		for i, line in enumerate(lines):
 			if len(self.old_lines) > i and line == self.old_lines[i]:
 				continue
-			cursor_move(0, i)
+			cursor_move(i, 0)
 			sys.stdout.write(get_cap('el'))
 			sys.stdout.write(line)
 
 		# clear rest of screen
-		cursor_move(0, len(lines))
+		cursor_move(len(lines), 0)
 		sys.stdout.write(get_cap('ed'))
 		sys.stdout.flush()
 
