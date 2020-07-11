@@ -100,30 +100,29 @@ def getch():
 # 	return OSC + '2;' + title + BEL
 
 
-def print_line(line):
-	if not isinstance(line, list):
-		line = [line]
-	for span in line:
-		if isinstance(span, tuple):
-			s, attrs = span
-		else:
-			s, attrs = span, {}
-
-		if attrs.get(bold):
-			write('bold')
-		if attrs.get('reverse'):
-			write('rev')
-		if attrs.get('underline'):
-			write('smul')
-		if attrs.get('italic'):
-			write('sitm')
-		if 'fg' in attrs:
-			write('setaf', attrs['fg'])
-		if 'bg' in attrs:
-			write('setab', attrs['bg'])
-		print(s, end=' ')
-		sys.stdout.flush()
-		write('sgr0')
+def style(
+	s,
+	bold=False,
+	rev=False,
+	underline=False,
+	italic=False,
+	fg=None,
+	bg=None,
+):
+	styles = ''
+	if bold:
+		styles += get_cap('bold')
+	if rev:
+		styles += get_cap('rev')
+	if underline:
+		styles += get_cap('smul')
+	if italic:
+		styles += get_cap('sitm')
+	if fg is not None:
+		styles += get_cap('setaf', fg)
+	if bg is not None:
+		styles += get_cap('setab', bg)
+	return styles + s + get_cap('sgr0')
 
 
 class App:
@@ -138,7 +137,7 @@ class App:
 				continue
 			write('cup', i, 0)
 			write('el')
-			print_line(line)
+			print(line)
 
 		# clear rest of screen
 		write('cup', len(lines), 0)
@@ -182,7 +181,7 @@ class Example(App):
 
 	def render(self):
 		for key in self.keys:
-			yield [(key, {'fg': 13}), 'test']
+			yield style(str(key), fg=13) + 'test'
 
 
 if __name__ == '__main__':
