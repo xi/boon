@@ -41,16 +41,20 @@ def isatty():
 	return os.isatty(sys.stdout.fileno())
 
 
-def write(cap, *args):
+def get_cap(cap, *args):
 	# see `man terminfo` for available capabilities
 	if not isatty():
-		return
+		return ''
 	code = curses.tigetstr(cap)
 	if not code:
-		return
+		return ''
 	if args:
 		code = curses.tparm(code, *args)
-	sys.stdout.buffer.write(code)
+	return code.decode('ascii')
+
+
+def write(cap, *args):
+	sys.stdout.write(get_cap(cap, *args))
 
 
 @contextmanager
