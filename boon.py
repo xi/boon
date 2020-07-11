@@ -11,20 +11,22 @@ from fcntl import ioctl
 
 curses.setupterm()
 
-# FIXME: tigertstr uses \x1bO (SS3) instead of \x1b[ (CSI) as prefix
+CSI = '\033['
+
+# tigertstr uses \033O (SS3) instead of \033[ (CSI) as prefix
 # https://en.wikipedia.org/wiki/ANSI_escape_code
 KEY_BACKSPACE = curses.tigetstr('kbs').decode('ascii')
 KEY_ESC = '\x1b'
-KEY_HOME = curses.tigetstr('khome').decode('ascii')
-KEY_END = curses.tigetstr('kend').decode('ascii')
-KEY_INSERT = curses.tigetstr('kich1').decode('ascii')
-KEY_DELETE = curses.tigetstr('kdch1').decode('ascii')
-KEY_PPAGE = curses.tigetstr('kpp').decode('ascii')
-KEY_NPAGE = curses.tigetstr('knp').decode('ascii')
-KEY_UP = curses.tigetstr('kcuu1').decode('ascii')
-KEY_DOWN = curses.tigetstr('kcud1').decode('ascii')
-KEY_RIGHT = curses.tigetstr('kcuf1').decode('ascii')
-KEY_LEFT = curses.tigetstr('kcub1').decode('ascii')
+KEY_HOME = CSI + 'H'
+KEY_END = CSI + 'F'
+KEY_INSERT = CSI + '3~'
+KEY_DELETE = CSI + '4~'
+KEY_PPAGE = CSI + '5~'
+KEY_NPAGE = CSI + '6~'
+KEY_UP = CSI + 'A'
+KEY_DOWN = CSI + 'B'
+KEY_RIGHT = CSI + 'C'
+KEY_LEFT = CSI + 'D'
 
 
 def getsize():
