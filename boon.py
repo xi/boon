@@ -53,10 +53,6 @@ def get_cap(cap, *args):
 	return code.decode('ascii')
 
 
-def write(cap, *args):
-	sys.stdout.write(get_cap(cap, *args))
-
-
 @contextmanager
 def termios_reset(fd):
 	old = termios.tcgetattr(fd)
@@ -68,16 +64,18 @@ def termios_reset(fd):
 
 @contextmanager
 def fullscreen():
-	write('civis')
-	write('smcup')
+	sys.stdout.write(get_cap('civis'))
+	sys.stdout.write(get_cap('smcup'))
+	sys.stdout.flush()
 	try:
 		fd = sys.stdin.fileno()
 		with termios_reset(fd):
 			tty.setcbreak(fd)
 			yield
 	finally:
-		write('rmcup')
-		write('cnorm')
+		sys.stdout.write(get_cap('rmcup'))
+		sys.stdout.write(get_cap('cnorm'))
+		sys.stdout.flush()
 
 
 def getch():
@@ -110,13 +108,13 @@ class App:
 		for i, line in enumerate(lines):
 			if len(self.old_lines) > i and line == self.old_lines[i]:
 				continue
-			write('cup', i, 0)
-			write('el')
-			print(line)
+			sys.stdout.write(get_cap('cup', i, 0))
+			sys.stdout.write(get_cap('el'))
+			sys.stdout.write(line)
 
 		# clear rest of screen
-		write('cup', len(lines), 0)
-		write('ed')
+		sys.stdout.write(get_cap('cup', len(lines), 0))
+		sys.stdout.write(get_cap('ed'))
 		sys.stdout.flush()
 
 		self.old_lines = lines
