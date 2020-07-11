@@ -13,18 +13,18 @@ curses.setupterm()
 
 # FIXME: tigertstr uses \x1bO (SS3) instead of \x1b[ (CSI) as prefix
 # https://en.wikipedia.org/wiki/ANSI_escape_code
-KEY_BACKSPACE = curses.tigetstr('kbs')
-KEY_ESC = b'\x1b'
-KEY_HOME = curses.tigetstr('khome')
-KEY_END = curses.tigetstr('kend')
-KEY_INSERT = curses.tigetstr('kich1')
-KEY_DELETE = curses.tigetstr('kdch1')
-KEY_PPAGE = curses.tigetstr('kpp')
-KEY_NPAGE = curses.tigetstr('knp')
-KEY_UP = curses.tigetstr('kcuu1')
-KEY_DOWN = curses.tigetstr('kcud1')
-KEY_RIGHT = curses.tigetstr('kcuf1')
-KEY_LEFT = curses.tigetstr('kcub1')
+KEY_BACKSPACE = curses.tigetstr('kbs').decode('ascii')
+KEY_ESC = '\x1b'
+KEY_HOME = curses.tigetstr('khome').decode('ascii')
+KEY_END = curses.tigetstr('kend').decode('ascii')
+KEY_INSERT = curses.tigetstr('kich1').decode('ascii')
+KEY_DELETE = curses.tigetstr('kdch1').decode('ascii')
+KEY_PPAGE = curses.tigetstr('kpp').decode('ascii')
+KEY_NPAGE = curses.tigetstr('knp').decode('ascii')
+KEY_UP = curses.tigetstr('kcuu1').decode('ascii')
+KEY_DOWN = curses.tigetstr('kcud1').decode('ascii')
+KEY_RIGHT = curses.tigetstr('kcuf1').decode('ascii')
+KEY_LEFT = curses.tigetstr('kcub1').decode('ascii')
 
 
 def getsize():
@@ -90,7 +90,7 @@ def getch():
 		flags[6][termios.VMIN] = 0
 		flags[6][termios.VTIME] = 0
 		termios.tcsetattr(fd, termios.TCSADRAIN, flags)
-		return os.read(fd, 8)
+		return os.read(fd, 8).decode('ascii')
 
 
 # https://github.com/tartley/colorama/blob/master/colorama/ansi.py
@@ -149,11 +149,11 @@ class Example(App):
 		self.keys = ['f', 'b', 'z']
 
 	def on_key(self, key):
-		if key == b'q':
+		if key == 'q':
 			sys.exit(0)
 		elif key == KEY_BACKSPACE:
 			self.keys.pop()
-		else:
+		elif key in 'abcdefghijklmnopqrstuvwxyz':
 			self.keys.append(key)
 
 	def render(self):
