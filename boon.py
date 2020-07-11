@@ -95,38 +95,6 @@ def getch():
 		return os.read(fd, 8)
 
 
-def cursor_move(x, y):
-	write('cup', y, x)
-
-
-def clear():
-	write('clear')
-
-
-def clear_eol():
-	write('el')
-
-
-def bold():
-	write('bold')
-
-
-def reverse():
-	write('rev')
-
-
-def reset():
-	write('sgr0')
-
-
-def set_bg(i):
-	write('setab', i)
-
-
-def set_fg(i):
-	write('setaf', i)
-
-
 # https://github.com/tartley/colorama/blob/master/colorama/ansi.py
 # def set_title(title):
 # 	return OSC + '2;' + title + BEL
@@ -168,12 +136,12 @@ class App:
 		for i, line in enumerate(lines):
 			if len(self.old_lines) > i and line == self.old_lines[i]:
 				continue
-			cursor_move(0, i)
-			clear_eol()
+			write('cup', i, 0)
+			write('el')
 			print_line(line)
 
 		# clear rest of screen
-		cursor_move(0, len(lines))
+		write('cup', len(lines), 0)
 		write('ed')
 		sys.stdout.flush()
 
