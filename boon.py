@@ -27,7 +27,7 @@ KEY_RIGHT = CSI + 'C'
 KEY_LEFT = CSI + 'D'
 
 
-def getsize():
+def get_size():
 	# curses.tigetnum('cols') does not update on resize
 	try:
 		raw = ioctl(sys.stdout, termios.TIOCGWINSZ, '\000' * 8)
@@ -120,7 +120,7 @@ class App:
 		self.old_lines = lines
 
 	def on_resize(self, *args):
-		self.rows, self.cols = getsize()
+		self.rows, self.cols = get_size()
 		self.update()
 
 	def run(self):
