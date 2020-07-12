@@ -32,7 +32,7 @@ def getsize():
 	try:
 		raw = ioctl(sys.stdout, termios.TIOCGWINSZ, '\000' * 8)
 		parsed = struct.unpack('hhhh', raw)
-		return parsed[1], parsed[0]
+		return parsed[0], parsed[1]
 	except OSError:
 		return 0, 0
 
@@ -120,7 +120,7 @@ class App:
 		self.old_lines = lines
 
 	def on_resize(self, *args):
-		self.cols, self.rows = getsize()
+		self.rows, self.cols = getsize()
 		self.update()
 
 	def run(self):
