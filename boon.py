@@ -27,16 +27,6 @@ KEY_RIGHT = CSI + 'C'
 KEY_LEFT = CSI + 'D'
 
 
-def get_size():
-	# curses.tigetnum('cols') does not update on resize
-	try:
-		raw = ioctl(sys.stdout, termios.TIOCGWINSZ, '\000' * 8)
-		parsed = struct.unpack('hhhh', raw)
-		return parsed[0], parsed[1]
-	except OSError:
-		return 0, 0
-
-
 def isatty():
 	return os.isatty(sys.stdout.fileno())
 
@@ -51,6 +41,20 @@ def get_cap(cap, *args):
 	if args:
 		code = curses.tparm(code, *args)
 	return code.decode('ascii')
+
+
+def move(y, x):
+	sys.stdout.write(get_cap('cup', y, x))
+
+
+def get_size():
+	# curses.tigetnum('cols') does not update on resize
+	try:
+		raw = ioctl(sys.stdout, termios.TIOCGWINSZ, '\000' * 8)
+		parsed = struct.unpack('hhhh', raw)
+		return parsed[0], parsed[1]
+	except OSError:
+		return 0, 0
 
 
 @contextmanager
@@ -91,10 +95,6 @@ def getch(timeout=0.5):
 		flags[6][termios.VTIME] = 0
 		termios.tcsetattr(fd, termios.TCSADRAIN, flags)
 		return os.read(fd, 8).decode('ascii')
-
-
-def move(y, x):
-	sys.stdout.write(get_cap('cup', y, x))
 
 
 class App:
