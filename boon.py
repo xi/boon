@@ -100,6 +100,7 @@ def cursor_move(y, x):
 class App:
 	def __init__(self):
 		self.old_lines = []
+		self.running = False
 		signal.signal(signal.SIGWINCH, self.on_resize)
 
 	def update(self):
@@ -123,9 +124,10 @@ class App:
 		self.update()
 
 	def run(self):
+		self.running = True
 		with fullscreen():
 			self.on_resize()
-			while True:
+			while self.running:
 				key = getch()
 				if key:
 					self.on_key(key)
