@@ -54,7 +54,7 @@ def get_cap(cap, *args):
 
 
 @contextmanager
-def termios_reset(fd):
+def tty_restore(fd):
 	old = termios.tcgetattr(fd)
 	try:
 		yield
@@ -69,7 +69,7 @@ def fullscreen():
 	sys.stdout.flush()
 	try:
 		fd = sys.stdin.fileno()
-		with termios_reset(fd):
+		with tty_restore(fd):
 			tty.setcbreak(fd)
 			yield
 	finally:
@@ -85,7 +85,7 @@ def getch(timeout=0.5):
 		r, _w, _e = select.select([fd], [], [], timeout)
 	except select.error:
 		return
-	with termios_reset(fd):
+	with tty_restore(fd):
 		flags = termios.tcgetattr(fd)
 		flags[6][termios.VMIN] = 0
 		flags[6][termios.VTIME] = 0
