@@ -29,6 +29,8 @@ class Example(boon.App):
 			self.selection += 1
 		elif key in ['q', '\n']:
 			sys.exit(0)
+		else:
+			self.items.append(key)
 
 
 example = Example()
