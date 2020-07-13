@@ -92,10 +92,10 @@ class App:
 		self.running = False
 		signal.signal(signal.SIGWINCH, self.on_resize)
 
-	def update(self):
+	def update(self, force=False):
 		lines = list(self.render(self.rows, self.cols))
 		for i, line in enumerate(lines):
-			if len(self.old_lines) > i and line == self.old_lines[i]:
+			if not force and len(self.old_lines) > i and line == self.old_lines[i]:
 				continue
 			move(i, 0)
 			sys.stdout.write(get_cap('el'))
@@ -111,7 +111,7 @@ class App:
 
 	def on_resize(self, *args):
 		self.cols, self.rows = shutil.get_terminal_size()
-		self.update()
+		self.update(force=True)
 
 	def run(self):
 		self.running = True
