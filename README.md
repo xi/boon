@@ -86,11 +86,6 @@ print(get_cap('setaf', 13) + 'foo' + get_cap('sgr0'))
 
 Move the cursor to the given position.
 
-### `get_size() -> (rows, cols)`
-
-Get the current size of the terminal. This is more reliable than
-`get_cap('rows')` / `get_cap('cols')`.
-
 ### `tty_restore(fd)`
 
 Context manager that restores tty settings after the nested block.

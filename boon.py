@@ -1,13 +1,12 @@
 import os
 import curses
 import select
+import shutil
 import signal
-import struct
 import sys
 import termios
 import tty
 from contextlib import contextmanager
-from fcntl import ioctl
 
 curses.setupterm()
 
@@ -45,16 +44,6 @@ def get_cap(cap, *args):
 
 def move(y, x):
 	sys.stdout.write(get_cap('cup', y, x))
-
-
-def get_size():
-	# curses.tigetnum('cols') does not update on resize
-	try:
-		raw = ioctl(sys.stdout, termios.TIOCGWINSZ, '\000' * 8)
-		parsed = struct.unpack('hhhh', raw)
-		return parsed[0], parsed[1]
-	except OSError:
-		return 0, 0
 
 
 @contextmanager
@@ -121,7 +110,7 @@ class App:
 		self.old_lines = lines
 
 	def on_resize(self, *args):
-		self.rows, self.cols = get_size()
+		self.cols, self.rows = shutil.get_terminal_size()
 		self.update()
 
 	def run(self):
