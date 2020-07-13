@@ -71,13 +71,9 @@ def fullscreen():
 		sys.stdout.flush()
 
 
-def getch(timeout=0.5):
+def getch():
 	# NOTE: result might contain more than one key
 	fd = sys.stdin.fileno()
-	try:
-		r, _w, _e = select.select([fd], [], [], timeout)
-	except select.error:
-		return
 	with tty_restore(fd):
 		flags = termios.tcgetattr(fd)
 		flags[6][termios.VMIN] = 0
@@ -90,6 +86,7 @@ class App:
 	def __init__(self):
 		self.old_lines = []
 		self.running = False
+		self.timeout = 0.5
 		signal.signal(signal.SIGWINCH, self.on_resize)
 
 	def update(self, force=False):
@@ -118,9 +115,12 @@ class App:
 		with fullscreen():
 			self.on_resize()
 			while self.running:
-				key = getch()
-				if key:
-					self.on_key(key)
+				try:
+					r, _w, _e = select.select([sys.stdin], [], [], self.timeout)
+				except select.error:
+					continue
+				if sys.stdin in r:
+					self.on_key(getch())
 					self.update()
 
 	def render(self, rows, cols):

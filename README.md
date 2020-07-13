@@ -105,7 +105,7 @@ def getpass(prompt):
 Context manager that enters cup and cbreak mode and also hides the cursor.
 Everything is restored to the previous state after the nested block.
 
-### `getch(timeout=0.5) -> string`
+### `getch() -> string`
 
-Reads from stdin. If no keys are available within the given timeout, `None` is
-returned. See `App.on_key()` for details on the return value.
+Read from stdin. This is non-blocking. See `App.on_key()` for details on the
+return value.
