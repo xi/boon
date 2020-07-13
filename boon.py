@@ -94,7 +94,7 @@ def getch(timeout=0.5):
 		flags[6][termios.VMIN] = 0
 		flags[6][termios.VTIME] = 0
 		termios.tcsetattr(fd, termios.TCSADRAIN, flags)
-		return os.read(fd, 8).decode('ascii')
+		return sys.stdin.read(8)
 
 
 class App:
