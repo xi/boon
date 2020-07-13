@@ -10,11 +10,11 @@ class Example(boon.App):
 		super().__init__()
 		self.selection = 0
 
-	def render(self):
-		for i in range((self.rows - 3) // 2):
+	def render(self, rows, cols):
+		for i in range((rows - 3) // 2):
 			yield ''
 
-		template = '{:^%i}' % self.cols
+		template = '{:^%i}' % cols
 		for i, item in enumerate(self.items):
 			centered = template.format(item)
 			if i == self.selection:

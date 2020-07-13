@@ -21,7 +21,7 @@ low level API or a third party library such as
 import boon
 
 class Example(boon.App):
-  def render(self):
+  def render(self, rows, cols):
     yield 'Hello World'
 
   def on_key(self, key):
@@ -43,11 +43,7 @@ Call to start the main loop.
 
 Set to `False` to stop the main loop.
 
-### `App.rows` / `App.cols`
-
-The current size of the terminal.
-
-### `App.render()`
+### `App.render(rows, cols)`
 
 Overwrite to define your view. For every line in the UI, this functions should
 yield a string.

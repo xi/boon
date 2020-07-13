@@ -104,7 +104,7 @@ class App:
 		signal.signal(signal.SIGWINCH, self.on_resize)
 
 	def update(self):
-		lines = list(self.render())
+		lines = list(self.render(self.rows, self.cols))
 		for i, line in enumerate(lines):
 			if len(self.old_lines) > i and line == self.old_lines[i]:
 				continue
@@ -133,7 +133,7 @@ class App:
 					self.on_key(key)
 					self.update()
 
-	def render(self):
+	def render(self, rows, cols):
 		return []
 
 	def on_key(self, key):
