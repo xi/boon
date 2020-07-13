@@ -87,6 +87,9 @@ class App:
 		self.old_lines = []
 		self.running = False
 		self.timeout = 0.5
+
+		# self-pipe to avoid concurrency issues with signal
+		self.resize_in, self.resize_out = os.pipe2(os.O_NONBLOCK)
 		signal.signal(signal.SIGWINCH, self.on_resize)
 
 	def update(self, force=False):
@@ -107,8 +110,7 @@ class App:
 		self.old_lines = lines
 
 	def on_resize(self, *args):
-		self.cols, self.rows = shutil.get_terminal_size()
-		self.update(force=True)
+		os.write(self.resize_out, b'.')
 
 	def run(self):
 		self.running = True
@@ -116,9 +118,15 @@ class App:
 			self.on_resize()
 			while self.running:
 				try:
-					r, _w, _e = select.select([sys.stdin], [], [], self.timeout)
+					r, _w, _e = select.select(
+						[sys.stdin, self.resize_in], [], [], self.timeout
+					)
 				except select.error:
 					continue
+				if self.resize_in in r:
+					os.read(self.resize_in, 8)
+					self.cols, self.rows = shutil.get_terminal_size()
+					self.update(force=True)
 				if sys.stdin in r:
 					self.on_key(getch())
 					self.update()
