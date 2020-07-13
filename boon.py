@@ -113,8 +113,9 @@ class App:
 			sys.stdout.write(line)
 
 		# clear rest of screen
-		move(len(lines), 0)
-		sys.stdout.write(get_cap('ed'))
+		if len(lines) < self.rows:
+			move(len(lines), 0)
+			sys.stdout.write(get_cap('ed'))
 		sys.stdout.flush()
 
 		self.old_lines = lines
