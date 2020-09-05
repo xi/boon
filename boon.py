@@ -1,6 +1,6 @@
 import os
 import curses
-import select
+import selectors
 import shutil
 import signal
 import sys
@@ -112,22 +112,24 @@ class App:
 	def on_resize(self, *args):
 		os.write(self.resize_out, b'.')
 
+	def select(self, *fileobjs):
+		with selectors.DefaultSelector() as sel:
+			for fileobj in fileobjs:
+				sel.register(fileobj, selectors.EVENT_READ)
+			while self.running:
+				for key, mask in sel.select():
+					yield key.fileobj
+
 	def run(self):
 		self.running = True
 		with fullscreen():
 			self.on_resize()
-			while self.running:
-				try:
-					r, _w, _e = select.select(
-						[sys.stdin, self.resize_in], [], [], self.timeout
-					)
-				except select.error:
-					continue
-				if self.resize_in in r:
+			for fileobj in self.select(sys.stdin, self.resize_in):
+				if fileobj is self.resize_in:
 					os.read(self.resize_in, 8)
 					self.cols, self.rows = shutil.get_terminal_size()
 					self.update(force=True)
-				if sys.stdin in r:
+				elif fileobj is sys.stdin:
 					self.on_key(getch())
 					self.update()
 
