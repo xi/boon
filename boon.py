@@ -87,6 +87,7 @@ class App:
 		self.old_lines = []
 		self.running = False
 		self.timeout = 0.5
+		self.selector = selectors.DefaultSelector()
 
 		# self-pipe to avoid concurrency issues with signal
 		self.resize_in, self.resize_out = os.pipe2(os.O_NONBLOCK)
@@ -113,24 +114,26 @@ class App:
 		os.write(self.resize_out, b'.')
 
 	def select(self, *fileobjs):
-		with selectors.DefaultSelector() as sel:
+		with self.selector as sel:
 			for fileobj in fileobjs:
 				sel.register(fileobj, selectors.EVENT_READ)
 			while self.running:
-				for key, mask in sel.select():
-					yield key.fileobj
+				yield from sel.select()
 
 	def run(self):
 		self.running = True
 		with fullscreen():
 			self.on_resize()
-			for fileobj in self.select(sys.stdin, self.resize_in):
-				if fileobj is self.resize_in:
+			for key, mask in self.select(self.resize_in):
+				if key.fileobj is self.resize_in:
 					os.read(self.resize_in, 8)
 					self.cols, self.rows = shutil.get_terminal_size()
 					self.update(force=True)
-				elif fileobj is sys.stdin:
-					self.on_key(getch())
+				else:
+					if key.fileobj is sys.stdin:
+						self.on_key(getch())
+					elif callable(key.data):
+						key.data()
 					self.update()
 
 	def render(self, rows, cols):
