@@ -124,7 +124,7 @@ class App:
 		self.running = True
 		with fullscreen():
 			self.on_resize()
-			for key, mask in self.select(self.resize_in):
+			for key, mask in self.select(sys.stdin, self.resize_in):
 				if key.fileobj is self.resize_in:
 					os.read(self.resize_in, 8)
 					self.cols, self.rows = shutil.get_terminal_size()
