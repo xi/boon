@@ -7,6 +7,7 @@ import sys
 import termios
 import tty
 from contextlib import contextmanager
+from functools import wraps
 
 curses.setupterm()
 
@@ -46,7 +47,29 @@ def move(y, x):
 	sys.stdout.write(get_cap('cup', y, x))
 
 
-@contextmanager
+class ReusableContextManager:
+	def __init__(self, factory, *args, **kwargs):
+		self.factory = factory
+		self.args = args
+		self.kwargs = kwargs
+
+	def __enter__(self):
+		self.mgr = self.factory(*self.args, **self.kwargs)
+		return self.mgr.__enter__()
+
+	def __exit__(self, *args, **kwargs):
+		return self.mgr.__exit__(*args, **kwargs)
+
+
+def reusable_contextmanager(func):
+	factory = contextmanager(func)
+	@wraps(func)
+	def wrapper(*args, **kwargs):
+		return ReusableContextManager(factory, *args, **kwargs)
+	return wrapper
+
+
+@reusable_contextmanager
 def tty_restore(fd):
 	old = termios.tcgetattr(fd)
 	try:
@@ -55,7 +78,7 @@ def tty_restore(fd):
 		termios.tcsetattr(fd, termios.TCSADRAIN, old)
 
 
-@contextmanager
+@reusable_contextmanager
 def fullscreen():
 	sys.stdout.write(get_cap('civis'))
 	sys.stdout.write(get_cap('smcup'))
