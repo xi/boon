@@ -111,10 +111,12 @@ class App:
 		self.running = False
 		self.timeout = 0.5
 		self.selector = selectors.DefaultSelector()
+		self.fullscreen = fullscreen()
 
 		# self-pipe to avoid concurrency issues with signal
 		self.sig_in, self.sig_out = os.pipe2(os.O_NONBLOCK)
 		signal.signal(signal.SIGWINCH, self.on_resize)
+		signal.signal(signal.SIGTSTP, self.on_stop)
 
 	def update(self, force=False):
 		lines = list(self.render(self.rows, self.cols))
@@ -136,6 +138,9 @@ class App:
 	def on_resize(self, *args):
 		os.write(self.sig_out, b'r')
 
+	def on_stop(self, *args):
+		os.write(self.sig_out, b's')
+
 	def select(self, *fileobjs):
 		with self.selector as sel:
 			for fileobj in fileobjs:
@@ -145,13 +150,19 @@ class App:
 
 	def run(self):
 		self.running = True
-		with fullscreen():
+		with self.fullscreen:
 			self.on_resize()
 			for key, mask in self.select(sys.stdin, self.sig_in):
 				if key.fileobj is self.sig_in:
 					b = os.read(self.sig_in, 1)
 					if b == b'r':
 						self.cols, self.rows = shutil.get_terminal_size()
+						self.update(force=True)
+					elif b == b's':
+						self.fullscreen.__exit__(None, None, None)
+						os.kill(os.getpid(), signal.SIGSTOP)
+						# paused until SIGCONT
+						self.fullscreen.__enter__()
 						self.update(force=True)
 				else:
 					if key.fileobj is sys.stdin:
