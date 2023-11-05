@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "boon"
+version = "0.0.0"
+description = "unix terminal framework"
+readme = "README.md"
+authors = [{name = "Tobias Bengfort", email = "tobias.bengfort@posteo.de"}]
+license = {text = "MIT"}
+classifiers = [
+    "Environment :: Console :: Curses",
+    "Intended Audience :: Developers",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Software Development :: User Interfaces",
+]
+urls = {Homepage = "https://github.com/xi/boon"}
+
+[tool.setuptools]
+py-modules = ["boon"]
