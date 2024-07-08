@@ -19,6 +19,7 @@ KEY_BACKSPACE = curses.tigetstr('kbs').decode('ascii')
 KEY_ESC = '\x1b'
 KEY_HOME = CSI + 'H'
 KEY_END = CSI + 'F'
+KEY_DEL = CSI + '3~'
 KEY_PPAGE = CSI + '5~'
 KEY_NPAGE = CSI + '6~'
 KEY_UP = CSI + 'A'

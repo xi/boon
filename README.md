@@ -64,6 +64,7 @@ escape sequences:
 - `KEY_ESC`
 - `KEY_HOME`
 - `KEY_END`
+- `KEY_DEL`
 - `KEY_PPAGE`
 - `KEY_NPAGE`
 - `KEY_UP`
