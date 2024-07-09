@@ -45,7 +45,7 @@ Set to `False` to stop the main loop.
 
 ### `App.selector`
 
-In instance of
+An instance of
 [`selectors.DefaultSelector`](https://docs.python.org/3/library/selectors.html#selectors.DefaultSelector)
 you can use to register additional file objects to the main loop.
 
