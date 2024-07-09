@@ -7,7 +7,6 @@ import sys
 import termios
 import tty
 from contextlib import contextmanager
-from functools import wraps
 
 curses.setupterm()
 
@@ -48,29 +47,7 @@ def move(y, x):
     sys.stdout.write(get_cap('cup', y, x))
 
 
-class ReusableContextManager:
-    def __init__(self, factory, *args, **kwargs):
-        self.factory = factory
-        self.args = args
-        self.kwargs = kwargs
-
-    def __enter__(self):
-        self.mgr = self.factory(*self.args, **self.kwargs)
-        return self.mgr.__enter__()
-
-    def __exit__(self, *args, **kwargs):
-        return self.mgr.__exit__(*args, **kwargs)
-
-
-def reusable_contextmanager(func):
-    factory = contextmanager(func)
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        return ReusableContextManager(factory, *args, **kwargs)
-    return wrapper
-
-
-@reusable_contextmanager
+@contextmanager
 def tty_restore(fd):
     old = termios.tcgetattr(fd)
     try:
@@ -79,7 +56,7 @@ def tty_restore(fd):
         termios.tcsetattr(fd, termios.TCSADRAIN, old)
 
 
-@reusable_contextmanager
+@contextmanager
 def fullscreen():
     sys.stdout.write(get_cap('civis'))
     sys.stdout.write(get_cap('smcup'))
@@ -93,6 +70,15 @@ def fullscreen():
         sys.stdout.write(get_cap('rmcup'))
         sys.stdout.write(get_cap('cnorm'))
         sys.stdout.flush()
+
+
+class ReusableFullscreen:
+    def __enter__(self):
+        self.mgr = fullscreen()
+        return self.mgr.__enter__()
+
+    def __exit__(self, *args, **kwargs):
+        return self.mgr.__exit__(*args, **kwargs)
 
 
 def getch():
@@ -112,7 +98,7 @@ class App:
         self.running = False
         self.timeout = 0.5
         self.selector = selectors.DefaultSelector()
-        self.fullscreen = fullscreen()
+        self.fullscreen = ReusableFullscreen()
 
         # self-pipe to avoid concurrency issues with signal
         self.sig_in, self.sig_out = os.pipe2(os.O_NONBLOCK)
