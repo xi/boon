@@ -15,7 +15,7 @@ CSI = '\033['
 # tigertstr uses \033O (SS3) instead of \033[ (CSI) as prefix
 # https://en.wikipedia.org/wiki/ANSI_escape_code
 KEY_BACKSPACE = curses.tigetstr('kbs').decode('ascii')
-KEY_ESC = '\x1b'
+KEY_ESC = '\033'
 KEY_HOME = CSI + 'H'
 KEY_END = CSI + 'F'
 KEY_DEL = CSI + '3~'
