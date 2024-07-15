@@ -84,12 +84,7 @@ class ReusableFullscreen:
 def getch():
     # NOTE: result might contain more than one key
     fd = sys.stdin.fileno()
-    with tty_restore(fd):
-        flags = termios.tcgetattr(fd)
-        flags[6][termios.VMIN] = 0
-        flags[6][termios.VTIME] = 0
-        termios.tcsetattr(fd, termios.TCSADRAIN, flags)
-        return sys.stdin.read(8)
+    return os.read(fd, 8).decode('utf-8')
 
 
 class App:

@@ -114,5 +114,4 @@ Everything is restored to the previous state after the nested block.
 
 ### `getch() -> string`
 
-Read from stdin. This is non-blocking. See `App.on_key()` for details on the
-return value.
+Read from stdin. See `App.on_key()` for details on the return value.
