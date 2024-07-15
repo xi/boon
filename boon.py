@@ -1,5 +1,6 @@
 import curses
 import os
+import re
 import selectors
 import shutil
 import signal
@@ -11,6 +12,7 @@ from contextlib import contextmanager
 curses.setupterm()
 
 CSI = '\033['
+ESCAPE_CODE = re.compile(rf'{CSI}\[[0-9;]*[a-zA-Z~]')
 
 # tigertstr uses \033O (SS3) instead of \033[ (CSI) as prefix
 # https://en.wikipedia.org/wiki/ANSI_escape_code
@@ -81,10 +83,21 @@ class ReusableFullscreen:
         return self.mgr.__exit__(*args, **kwargs)
 
 
+def ansi_split(s):
+    while s:
+        m = ESCAPE_CODE.match(s)
+        if m:
+            yield m[0]
+            s = s[m.end():]
+        else:
+            yield s[0]
+            s = s[1:]
+
+
 def getch():
-    # NOTE: result might contain more than one key
     fd = sys.stdin.fileno()
-    return os.read(fd, 8).decode('utf-8')
+    s = os.read(fd, 1024).decode('utf-8')
+    return ansi_split(s)
 
 
 class App:
@@ -148,7 +161,8 @@ class App:
                         self.update(force=True)
                 else:
                     if key.fileobj is sys.stdin:
-                        self.on_key(getch())
+                        for key in getch():
+                            self.on_key(key)
                     elif callable(key.data):
                         key.data()
                     self.update()

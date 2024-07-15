@@ -72,9 +72,6 @@ escape sequences:
 - `KEY_RIGHT`
 - `KEY_LEFT`
 
-Note that boon reads all available input, so in rare occasions `key` might
-contain more than one key. This should not be an issue in practice though.
-
 
 ## Low level API
 
