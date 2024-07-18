@@ -14,6 +14,11 @@ low level API or a third party library such as
 [colorama](https://github.com/tartley/colorama/) or
 [blessings](https://github.com/erikrose/blessings/).
 
+## Installation
+
+```
+pip install boon-term
+```
 
 ## Example
 
