@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "boon"
+name = "boon-term"
 version = "0.0.0"
 description = "unix terminal framework"
 readme = "README.md"
