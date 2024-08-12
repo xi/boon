@@ -119,8 +119,7 @@ class App:
             if not force and len(self.old_lines) > i and line == self.old_lines[i]:
                 continue
             move(i, 0)
-            sys.stdout.write(get_cap('el'))
-            sys.stdout.write(line)
+            sys.stdout.write(line + get_cap('el'))
 
         # clear rest of screen
         if len(lines) < len(self.old_lines):
